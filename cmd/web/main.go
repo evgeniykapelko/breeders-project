@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"html/template"
@@ -14,10 +15,12 @@ const port = ":4000"
 type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
+	DB          *sql.DB
 }
 
 type appConfig struct {
 	useCache bool
+	dsn      string
 }
 
 func main() {
@@ -26,7 +29,15 @@ func main() {
 	}
 
 	flag.BoolVar(&app.config.useCache, "cache", false, "use cache for templates")
+	flag.StringVar(&app.config.dsn, "dsn", "mariadb:myverysecretpassword@tcp(localhost:3306)/breeders?parseTime=true&tls=false&collation=utf8_unicode_ci&timeout=5s", "DSN")
 	flag.Parse()
+
+	db, err := initMySQLDB(app.config.dsn)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	app.DB = db
 
 	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	//	fmt.Fprint(w, "Hello, World!")
@@ -43,7 +54,7 @@ func main() {
 
 	fmt.Println("Starting web application on port", port)
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
