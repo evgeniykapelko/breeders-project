@@ -2,7 +2,6 @@ package main
 
 import (
 	"breeders/models"
-	"database/sql"
 	"flag"
 	"fmt"
 	"html/template"
@@ -16,7 +15,6 @@ const port = ":4000"
 type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
-	DB          *sql.DB
 	Models      models.Models
 }
 
@@ -39,7 +37,6 @@ func main() {
 		log.Panic(err)
 	}
 
-	app.DB = db
 	app.Models = *models.New(db)
 
 	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
