@@ -9,7 +9,11 @@ type Models struct {
 }
 
 func New(conn *sql.DB) *Models {
-	repo = newMysqlRepository(conn)
+	if conn != nil {
+		repo = newMysqlRepository(conn)
+	} else {
+		repo = newTestRepository(nil)
+	}
 
 	return &Models{
 		DogBreed: DogBreed{},
