@@ -28,7 +28,7 @@ func (m *mysqlRepository) AllDogBreeds() ([]*DogBreed, error) {
 		var b DogBreed
 		err := rows.Scan(
 			&b.ID,
-			&b.Bread,
+			&b.Breed,
 			&b.WeightHighLbs,
 			&b.AverageWeight,
 			&b.Lifespan,

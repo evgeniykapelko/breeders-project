@@ -2,7 +2,7 @@ package pets
 
 type Pet struct {
 	Species          string `json:"species"`
-	Bread            string `json:"bread"`
+	Breed            string `json:"breed"`
 	MinWeight        int    `json:"min_weight,omitempty"`
 	MaxWeight        int    `json:"max_weight,omitempty"`
 	AverageWeight    int    `json:"average_weight,omitempty"`

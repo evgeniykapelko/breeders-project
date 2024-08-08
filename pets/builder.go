@@ -27,7 +27,7 @@ func (p *Pet) SetSpecies(s string) *Pet {
 }
 
 func (p *Pet) SetBreed(s string) *Pet {
-	p.Bread = s
+	p.Breed = s
 	return p
 }
 
