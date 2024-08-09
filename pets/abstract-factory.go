@@ -1,6 +1,7 @@
 package pets
 
 import (
+	"breeders/configuration"
 	"breeders/models"
 	"fmt"
 )
@@ -27,6 +28,7 @@ func (cff *CatFromFactory) Show() string {
 
 type PetFactoryInterface interface {
 	newPet() AnimalInterface
+	newPetWithBreed(breed string) AnimalInterface
 }
 
 type DogAbstractFactory struct{}
@@ -37,9 +39,26 @@ func (df *DogAbstractFactory) newPet() AnimalInterface {
 	}
 }
 
+func (df *DogAbstractFactory) newPetWithBreed(b string) AnimalInterface {
+	app := configuration.GetInstance()
+	breed, _ := app.Models.DogBreed.GetBreedByName(b)
+
+	return &DogFromFactory{
+		Pet: &models.Dog{
+			Breed: *breed,
+		},
+	}
+}
+
 type CatAbstractFactory struct{}
 
 func (cf *CatAbstractFactory) newPet() AnimalInterface {
+	return &CatFromFactory{
+		Pet: &models.Cat{},
+	}
+}
+
+func (cf *CatAbstractFactory) newPetWithBreed(b string) AnimalInterface {
 	return &CatFromFactory{
 		Pet: &models.Cat{},
 	}
@@ -55,6 +74,20 @@ func NewPetFromAbstractFactory(species string) (AnimalInterface, error) {
 		var catFactory CatAbstractFactory
 		cat := catFactory.newPet()
 		return cat, nil
+	default:
+		return nil, fmt.Errorf("Unknown species: %s", species)
+	}
+}
+
+func NewPetWithBreedFromAbstractFactory(species, breed string) (AnimalInterface, error) {
+	switch species {
+	case "dog":
+		return &DogFromFactory{}, nil
+		var dogFactory DogAbstractFactory
+		dog := dogFactory.newPetWithBreed(breed)
+		return dog, nil
+	case "cat":
+		return &CatFromFactory{}, nil
 	default:
 		return nil, fmt.Errorf("Unknown species: %s", species)
 	}
