@@ -4,6 +4,7 @@ import (
 	"breeders/configuration"
 	"breeders/models"
 	"fmt"
+	"log"
 )
 
 type AnimalInterface interface {
@@ -59,8 +60,17 @@ func (cf *CatAbstractFactory) newPet() AnimalInterface {
 }
 
 func (cf *CatAbstractFactory) newPetWithBreed(b string) AnimalInterface {
+	app := configuration.GetInstance()
+	breed, err := app.CatService.Remote.GetCatBreedByName(b)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
 	return &CatFromFactory{
-		Pet: &models.Cat{},
+		Pet: &models.Cat{
+			Breed: *breed,
+		},
 	}
 }
 
@@ -87,7 +97,9 @@ func NewPetWithBreedFromAbstractFactory(species, breed string) (AnimalInterface,
 		dog := dogFactory.newPetWithBreed(breed)
 		return dog, nil
 	case "cat":
-		return &CatFromFactory{}, nil
+		var catFactory CatAbstractFactory
+		cat := catFactory.newPetWithBreed(breed)
+		return cat, nil
 	default:
 		return nil, fmt.Errorf("Unknown species: %s", species)
 	}
