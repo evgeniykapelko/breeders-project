@@ -1,11 +1,15 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 var repo Repository
 
 type Models struct {
 	DogBreed DogBreed
+	Dog      Dog
 }
 
 func New(conn *sql.DB) *Models {
@@ -18,6 +22,17 @@ func New(conn *sql.DB) *Models {
 	return &Models{
 		DogBreed: DogBreed{},
 	}
+}
+
+type DogOfMonth struct {
+	ID    int
+	Dog   *Dog
+	Video string
+	Image string
+}
+
+func (d *Dog) GetDogOfMonthByID(id int) (*DogOfMonth, error) {
+	return repo.GetDogOfMonthByID(id)
 }
 
 type DogBreed struct {
@@ -53,17 +68,17 @@ type CatBreed struct {
 }
 
 type Dog struct {
-	ID               int      `json:"id"`
-	DogName          string   `json:"dog_name"`
-	BreedID          int      `json:"breed_id"`
-	BreederID        string   `json:"breeder_id"`
-	Color            string   `json:"color"`
-	DateOfBirth      string   `json:"date_of_birth"`
-	SpayedOrNeutered int      `json:"spayed_or_neutered"`
-	Description      string   `json:"description"`
-	Weight           int      `json:"weight"`
-	Breed            DogBreed `json:"breed"`
-	Breeder          Breeder  `json:"breeder"`
+	ID               int       `json:"id"`
+	DogName          string    `json:"dog_name"`
+	BreedID          int       `json:"breed_id"`
+	BreederID        int       `json:"breeder_id"`
+	Color            string    `json:"color"`
+	DateOfBirth      time.Time `json:"date_of_birth"`
+	SpayedOrNeutered int       `json:"spayed_or_neutered"`
+	Description      string    `json:"description"`
+	Weight           int       `json:"weight"`
+	Breed            DogBreed  `json:"breed"`
+	Breeder          Breeder   `json:"breeder"`
 }
 
 type Cat struct {
